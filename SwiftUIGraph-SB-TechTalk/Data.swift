@@ -9,7 +9,7 @@
 import Foundation
 import CoreGraphics
 
-class Data: ObservableObject {
+class Data {
     static let data: [CGFloat] = [
         210.08159387641163,
         214.84344368388153,
@@ -413,8 +413,8 @@ class Data: ObservableObject {
         68.3215637067778
     ]
 
-    @Published var startIndex: Int
-    @Published var endIndex: Int
+    var startIndex: Int
+    var endIndex: Int
 
     init(startIndex: Int, endIndex: Int) {
         self.startIndex = startIndex
