@@ -82,8 +82,10 @@ struct ContentView: View {
         let screenWidth = UIScreen.main.bounds.width
         let indexCountInScreen = dataEndIndex - dataStartIndex + 1
 
-        dataStartIndex += Int(floor((startPoint.x / screenWidth) * CGFloat(indexCountInScreen)))
-        dataEndIndex -= Int(floor(((screenWidth - endPoint.x) / screenWidth) * CGFloat(indexCountInScreen)))
+        let startX = min(startPoint.x, endPoint.x)
+        let endX = max(startPoint.x, endPoint.x)
+        dataStartIndex += Int(floor((startX / screenWidth) * CGFloat(indexCountInScreen)))
+        dataEndIndex -= Int(floor(((screenWidth - endX) / screenWidth) * CGFloat(indexCountInScreen)))
     }
 }
 
