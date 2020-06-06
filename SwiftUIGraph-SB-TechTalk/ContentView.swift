@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct MyGraph: Shape {
-    @ObservedObject var data: Data
+    var data: Data
 
     func path(in rect: CGRect) -> Path {
         let step = rect.width / CGFloat(data.endIndex - data.startIndex + 1)
