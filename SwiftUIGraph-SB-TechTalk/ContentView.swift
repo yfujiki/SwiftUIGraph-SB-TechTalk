@@ -41,22 +41,27 @@ struct ContentView: View {
     var body: some View {
         VStack {
             ZStack(alignment: .topLeading) {
+                GeometryReader { geometry in
+                    Rectangle()
+                        .fill(Color.white)
+                        .frame(width: geometry.size.width, height: geometry.size.height)
+                        .gesture(DragGesture()
+                            .onChanged({ (value) in
+                                if self.startPoint == nil {
+                                    self.startPoint = value.location
+                                } else {
+                                    self.endPoint = value.location
+                                }
+                            })
+                            .onEnded({ (value) in
+                                self.updateDataIndexes(in: geometry)
+                                self.startPoint = nil
+                                self.endPoint = nil
+                            })
+                    )
+                }
                 MyGraph(data: Data(startIndex: dataStartIndex, endIndex: dataEndIndex))
                     .stroke(Color.red, lineWidth: 4)
-                    .gesture(DragGesture()
-                        .onChanged({ (value) in
-                            if self.startPoint == nil {
-                                self.startPoint = value.location
-                            } else {
-                                self.endPoint = value.location
-                            }
-                        })
-                        .onEnded({ (value) in
-                            self.updateDataIndexes()
-                            self.startPoint = nil
-                            self.endPoint = nil
-                        })
-                )
                 if startPoint != nil && endPoint != nil {
                     Rectangle()
                         .stroke(Color.blue, lineWidth: 2)
@@ -72,20 +77,21 @@ struct ContentView: View {
         }
     }
 
-    private func updateDataIndexes() {
-        guard let startPoint = startPoint, let endPoint = endPoint else {
+    private func updateDataIndexes(in geometry: GeometryProxy? = nil) {
+        guard let geometry = geometry,
+            let startPoint = startPoint,
+            let endPoint = endPoint else {
             dataStartIndex = 0
             dataEndIndex = Data.originalDataCount - 1
             return
         }
 
-        let screenWidth = UIScreen.main.bounds.width
         let indexCountInScreen = dataEndIndex - dataStartIndex + 1
 
         let startX = min(startPoint.x, endPoint.x)
         let endX = max(startPoint.x, endPoint.x)
-        dataStartIndex += Int(floor((startX / screenWidth) * CGFloat(indexCountInScreen)))
-        dataEndIndex -= Int(floor(((screenWidth - endX) / screenWidth) * CGFloat(indexCountInScreen)))
+        dataStartIndex += Int(floor((startX / geometry.size.width) * CGFloat(indexCountInScreen)))
+        dataEndIndex -= Int(floor(((geometry.size.width - endX) / geometry.size.width) * CGFloat(indexCountInScreen)))
     }
 }
 
