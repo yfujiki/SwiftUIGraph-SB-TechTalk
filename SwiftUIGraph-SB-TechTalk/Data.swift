@@ -9,8 +9,8 @@
 import Foundation
 import CoreGraphics
 
-class Data {
-    let data: [CGFloat] = [
+class Data: ObservableObject {
+    static let data: [CGFloat] = [
         210.08159387641163,
         214.84344368388153,
         219.58982436257605,
@@ -412,4 +412,24 @@ class Data {
         67.36775308544814,
         68.3215637067778
     ]
+
+    @Published var startIndex: Int
+    @Published var endIndex: Int
+
+    init(startIndex: Int, endIndex: Int) {
+        self.startIndex = startIndex
+        self.endIndex = endIndex
+    }
+
+    static var originalDataCount : Int {
+        data.count
+    }
+
+    var count: Int {
+        endIndex - startIndex + 1
+    }
+
+    subscript(index: Int) -> CGFloat {
+        return type(of: self).data[index + startIndex]
+    }
 }
