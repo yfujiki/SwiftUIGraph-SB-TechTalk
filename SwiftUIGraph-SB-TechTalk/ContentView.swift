@@ -33,9 +33,33 @@ struct MyGraph: Shape {
 }
 
 struct ContentView: View {
+    @State var startPoint: CGPoint?
+    @State var endPoint: CGPoint?
+
     var body: some View {
-        MyGraph()
-            .stroke(Color.red, lineWidth: 4)
+        ZStack(alignment: .topLeading) {
+            MyGraph()
+                .stroke(Color.red, lineWidth: 4)
+                .gesture(DragGesture()
+                    .onChanged({ (value) in
+                        if self.startPoint == nil {
+                            self.startPoint = value.location
+                        } else {
+                            self.endPoint = value.location
+                        }
+                    })
+                    .onEnded({ (value) in
+                        self.startPoint = nil
+                        self.endPoint = nil
+                    })
+            )
+            if startPoint != nil && endPoint != nil {
+                Rectangle()
+                    .stroke(Color.blue, lineWidth: 2)
+                    .offset(x: startPoint!.x, y: startPoint!.y)
+                    .frame(width: endPoint!.x - startPoint!.x, height: endPoint!.y - startPoint!.y  )
+            }
+        }
     }
 }
 
