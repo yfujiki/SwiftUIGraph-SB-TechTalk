@@ -9,19 +9,18 @@
 import SwiftUI
 
 struct MyGraph: Shape {
-    let originalData: Data = Data()
-    var startIndex: Int = 0
-    var endIndex: Int = 399
+    @ObservedObject var data: Data
 
     func path(in rect: CGRect) -> Path {
-        let step = rect.width / CGFloat(endIndex - startIndex + 1)
+        let step = rect.width / CGFloat(data.endIndex - data.startIndex + 1)
         var path = Path()
 
-        for i in startIndex ... endIndex {
-            let x = CGFloat(i) * step
-            let y = originalData.data[i]
+        for i in data.startIndex ... data.endIndex {
+            let index = i - data.startIndex
+            let x = CGFloat(index) * step
+            let y = data[index]
             let point = CGPoint(x: x, y: y)
-            if i == startIndex {
+            if i == data.startIndex {
                 path.move(to: point)
             } else {
                 path.addLine(to: point)
