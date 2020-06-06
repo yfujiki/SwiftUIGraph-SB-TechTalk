@@ -35,30 +35,55 @@ struct ContentView: View {
     @State var startPoint: CGPoint?
     @State var endPoint: CGPoint?
 
+    @State var dataStartIndex: Int = 0
+    @State var dataEndIndex: Int = Data.originalDataCount - 1
+
     var body: some View {
-        ZStack(alignment: .topLeading) {
-            MyGraph()
-                .stroke(Color.red, lineWidth: 4)
-                .gesture(DragGesture()
-                    .onChanged({ (value) in
-                        if self.startPoint == nil {
-                            self.startPoint = value.location
-                        } else {
-                            self.endPoint = value.location
-                        }
-                    })
-                    .onEnded({ (value) in
-                        self.startPoint = nil
-                        self.endPoint = nil
-                    })
-            )
-            if startPoint != nil && endPoint != nil {
-                Rectangle()
-                    .stroke(Color.blue, lineWidth: 2)
-                    .offset(x: startPoint!.x, y: startPoint!.y)
-                    .frame(width: endPoint!.x - startPoint!.x, height: endPoint!.y - startPoint!.y  )
+        VStack {
+            ZStack(alignment: .topLeading) {
+                MyGraph(data: Data(startIndex: dataStartIndex, endIndex: dataEndIndex))
+                    .stroke(Color.red, lineWidth: 4)
+                    .gesture(DragGesture()
+                        .onChanged({ (value) in
+                            if self.startPoint == nil {
+                                self.startPoint = value.location
+                            } else {
+                                self.endPoint = value.location
+                            }
+                        })
+                        .onEnded({ (value) in
+                            self.updateDataIndexes()
+                            self.startPoint = nil
+                            self.endPoint = nil
+                        })
+                )
+                if startPoint != nil && endPoint != nil {
+                    Rectangle()
+                        .stroke(Color.blue, lineWidth: 2)
+                        .offset(x: startPoint!.x, y: startPoint!.y)
+                        .frame(width: endPoint!.x - startPoint!.x, height: endPoint!.y - startPoint!.y  )
+                }
             }
+            Button("Reset") {
+                self.startPoint = nil
+                self.endPoint = nil
+                self.updateDataIndexes()
+            }.padding(.bottom, 40)
         }
+    }
+
+    private func updateDataIndexes() {
+        guard let startPoint = startPoint, let endPoint = endPoint else {
+            dataStartIndex = 0
+            dataEndIndex = Data.originalDataCount - 1
+            return
+        }
+
+        let screenWidth = UIScreen.main.bounds.width
+        let indexCountInScreen = dataEndIndex - dataStartIndex + 1
+
+        dataStartIndex += Int(floor((startPoint.x / screenWidth) * CGFloat(indexCountInScreen)))
+        dataEndIndex -= Int(floor(((screenWidth - endPoint.x) / screenWidth) * CGFloat(indexCountInScreen)))
     }
 }
 
